@@ -6,6 +6,9 @@ function build(options = {}) {
   const app = fastify(options);
 
   // plugins
+  app.register(require('./plugins/mongoose'), {
+    uri: process.env.DATABASE_URI,
+  });
   app.register(require('fastify-socket.io'), { cors: { origin: '*' } });
 
   // routes

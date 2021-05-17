@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const server = require('./app')({
   logger: {
     level: 'info',

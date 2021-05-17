@@ -19,9 +19,19 @@ const mockData = {
   ],
 };
 
-const boards = (socket) => {
-  console.log(socket.id);
-  socket.emit('connection', mockData);
+const Board = require('../models/Board');
+
+const boards = async (socket) => {
+  const { boardId } = socket.handshake.query;
+  const board = await Board.findById(boardId);
+
+  if (!board) {
+    return;
+  }
+
+  const columns = [];
+
+  socket.emit('connection', { ...board.toObject(), columns });
 };
 
 module.exports = boards;

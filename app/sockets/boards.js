@@ -1,25 +1,7 @@
 'use strict';
 
-const mockData = {
-  name: 'My retro name',
-  columns: [
-    {
-      id: 1,
-      name: 'Went well',
-      items: [
-        {
-          id: 1,
-          description:
-            'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-        },
-      ],
-    },
-    { id: 2, name: 'To improve', items: [] },
-    { id: 3, name: 'Action items', items: [] },
-  ],
-};
-
 const Board = require('../models/Board');
+const BoardColumn = require('../models/BoardColumn');
 
 const boards = async (socket) => {
   const { boardId } = socket.handshake.query;
@@ -29,9 +11,13 @@ const boards = async (socket) => {
     return;
   }
 
-  const columns = [];
+  const boardObject = board.toObject();
+  const columns = await BoardColumn.find({ board: board._id });
 
-  socket.emit('connection', { ...board.toObject(), columns });
+  socket.emit('connection', {
+    ...boardObject,
+    columns,
+  });
 };
 
 module.exports = boards;

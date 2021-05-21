@@ -10,6 +10,7 @@ function build(options = {}) {
     uri: process.env.DATABASE_URI,
   });
   app.register(require('fastify-socket.io'), { cors: { origin: '*' } });
+  app.register(require('fastify-cors'));
 
   // routes
   app.register(require('./routes/boards'), { prefix: '/boards' });

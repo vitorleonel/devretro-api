@@ -3,7 +3,7 @@
 const Board = require('../models/Board');
 const BoardColumn = require('../models/BoardColumn');
 
-const getCurrentBoard = async (boardId, socket, broadcast = false) => {
+const dispatchCurrentBoard = async (boardId, socket, broadcast = false) => {
   try {
     const board = await Board.findById(boardId);
 
@@ -35,7 +35,7 @@ const addCard = async (boardId, columnId, description, socket) => {
       { $push: { items: { description: description.trim() } } }
     );
 
-    await getCurrentBoard(boardId, socket, true);
+    await dispatchCurrentBoard(boardId, socket, true);
   } catch (error) {
     error = true;
 
@@ -45,13 +45,36 @@ const addCard = async (boardId, columnId, description, socket) => {
   socket.emit('cards-add', { error });
 };
 
+const removeCard = async (boardId, columnId, cardId, socket) => {
+  let error = false;
+
+  try {
+    await BoardColumn.updateOne(
+      { _id: columnId, board: boardId },
+      { $pull: { items: { _id: cardId } } }
+    );
+
+    await dispatchCurrentBoard(boardId, socket, true);
+  } catch (error) {
+    error = true;
+
+    // TODO: trigger logs
+  }
+
+  socket.emit('cards-remove', { error });
+};
+
 const boards = async (socket) => {
   const { boardId } = socket.handshake.query;
 
-  await getCurrentBoard(boardId, socket);
+  await dispatchCurrentBoard(boardId, socket);
 
   socket.on('cards-add', ({ columnId, description }) =>
     addCard(boardId, columnId, description, socket)
+  );
+
+  socket.on('cards-remove', ({ columnId, cardId }) =>
+    removeCard(boardId, columnId, cardId, socket)
   );
 };
 

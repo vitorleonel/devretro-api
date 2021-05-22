@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const server = require('./app')({
   logger: {
-    level: 'info',
+    level: 'error',
     prettyPrint: true,
   },
 });

@@ -8,9 +8,9 @@ module.exports.createBoard = async (req, reply) => {
     const board = await Board.create({ name: req.body.name });
 
     await BoardColumn.insertMany([
-      { board: board._id, name: 'Went well' },
-      { board: board._id, name: 'To improve' },
-      { board: board._id, name: 'Action items' },
+      { board: board._id, name: 'Went well', color: 'green' },
+      { board: board._id, name: 'To improve', color: 'blue' },
+      { board: board._id, name: 'Action items', color: 'red' },
     ]);
 
     reply.code(201).send({ board });

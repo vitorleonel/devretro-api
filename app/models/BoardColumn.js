@@ -14,6 +14,7 @@ const boardColumnSchema = new mongoose.Schema(
       ref: 'Board',
     },
     name: String,
+    color: String,
     items: {
       type: [boardColumnItemSchema],
       default: () => [],

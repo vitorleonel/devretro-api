@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const boardColumnItemSchema = new mongoose.Schema(
   {
-    description: String,
+    userId: { type: String, required: true },
+    description: { type: String, required: true },
   },
   { timestamps: true }
 );

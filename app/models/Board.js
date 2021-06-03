@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const boardSchema = new mongoose.Schema(
   {
-    name: String,
+    userId: { type: String, required: true, index: true },
+    name: { type: String, required: true, trim: true },
   },
   { timestamps: true }
 );

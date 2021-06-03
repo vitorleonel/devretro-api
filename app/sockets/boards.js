@@ -26,39 +26,43 @@ const dispatchCurrentBoard = async (boardId, socket, broadcast = false) => {
   }
 };
 
-const addCard = async (boardId, columnId, description, socket) => {
+const addCard = async (boardId, payload, socket) => {
   let error = false;
 
   try {
+    const { columnId, userId, description } = payload;
+
+    if (!columnId || !userId || !description) {
+      throw new Error('Bad request');
+    }
+
     await BoardColumn.updateOne(
       { _id: columnId, board: boardId },
-      { $push: { items: { description: description.trim() } } }
+      { $push: { items: { userId, description } } }
     );
 
     await dispatchCurrentBoard(boardId, socket, true);
   } catch (error) {
     error = true;
-
-    // TODO: trigger logs
   }
 
   socket.emit('cards-add', { error });
 };
 
-const removeCard = async (boardId, columnId, cardId, socket) => {
+const removeCard = async (boardId, payload, socket) => {
   let error = false;
 
   try {
+    const { columnId, userId, cardId } = payload;
+
     await BoardColumn.updateOne(
       { _id: columnId, board: boardId },
-      { $pull: { items: { _id: cardId } } }
+      { $pull: { items: { _id: cardId, userId } } }
     );
 
     await dispatchCurrentBoard(boardId, socket, true);
   } catch (error) {
     error = true;
-
-    // TODO: trigger logs
   }
 
   socket.emit('cards-remove', { error });
@@ -69,13 +73,8 @@ const boards = async (socket) => {
 
   await dispatchCurrentBoard(boardId, socket);
 
-  socket.on('cards-add', ({ columnId, description }) =>
-    addCard(boardId, columnId, description, socket)
-  );
-
-  socket.on('cards-remove', ({ columnId, cardId }) =>
-    removeCard(boardId, columnId, cardId, socket)
-  );
+  socket.on('cards-add', (playload) => addCard(boardId, playload, socket));
+  socket.on('cards-remove', (payload) => removeCard(boardId, payload, socket));
 };
 
 module.exports = boards;

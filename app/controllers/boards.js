@@ -5,7 +5,10 @@ const BoardColumn = require('../models/BoardColumn');
 
 module.exports.createBoard = async (req, reply) => {
   try {
-    const board = await Board.create({ name: req.body.name });
+    const board = await Board.create({
+      userId: req.body.userId,
+      name: req.body.name,
+    });
 
     await BoardColumn.insertMany([
       { board: board._id, name: 'Went well', color: 'green' },

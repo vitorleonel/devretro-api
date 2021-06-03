@@ -10,8 +10,8 @@ const boards = (app, _, done) => {
       schema: {
         body: {
           type: 'object',
-          required: ['name'],
-          properties: { name: { type: 'string' } },
+          required: ['userId', 'name'],
+          properties: { userId: { type: 'string' }, name: { type: 'string' } },
         },
       },
     },
